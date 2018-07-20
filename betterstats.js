@@ -1,8 +1,8 @@
 /* VERS 1.0 */
-const YOU_ALREADY_RUN_THIS_SCRIPT_ON_THIS_PAGE___IF_YOU_WANT_TO_RUN_IT_AGAIN_REFRESH_THE_PAGE = '<- error message in console if you re-execute this script';
 
 // VARS
 
+const YOU_ALREADY_RUN_THIS_SCRIPT_ON_THIS_PAGE___IF_YOU_WANT_TO_RUN_IT_AGAIN_REFRESH_THE_PAGE = '<- error message in console if you re-execute this script';
 let tabClosed;
 let wind;
 let idStore = [];
@@ -66,7 +66,7 @@ const scrapeStats = () => {
 }
 
 const tabIsOpen = () => {
-  if (tabClosed) {
+  if (tabClosed || !wind) {
     tabClosed = false;
     console.log('Tab was closed. Reopening..');
     openTab();
