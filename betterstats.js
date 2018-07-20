@@ -34,7 +34,7 @@ const showLoadingIfNotLoadedYet = () => {
       const body = wind.document.getElementsByTagName('body')[0];
       body.className = '';
       body.style['padding'] = '50px';
-      body.innerHTML = `<div id="loading">Loading...</div>`;
+      body.innerHTML = `<div id="loading">Almost done...</div>`;
       setTimeout(() => refreshStats(), 5000);
     }
   }, 5000)
@@ -81,8 +81,8 @@ const injectBody = (results) => {
   body.style['padding'] = '10px 50px';
   body.innerHTML = `
     <h2 style="text-align:center;color:#21ba45;padding:15px">All your recent posts</h2>
-    <small style="float:right;color:red;margin:-40px 10px"><b>DO NOT REFRESH</b></small>
-    <div id="new-container">${results.join('<br>')}</div>`;
+    <small style="float:right;color:red;margin:-40px 10px"><b>DO NOT REFRESH THIS PAGE</b></small>
+    <div id="new-container">${results.length ? results.join('<br>') : 'Loading...'}</div>`;
   // wind.window.onbeforeunload = kittens; // nah, let me close it - it will re-open it on refresh.
 }
 
@@ -164,10 +164,16 @@ const openTab = () => {
 }
 openTab();
 setInterval(() => refreshStats(), 5 * 60000); // every 5 MINs
+let githubW;
 const kittens = () => {
   try {
-    console.error('Closing the other tab. If you go on and close this tab you`ll have to re-run the script.');
+    console.error(`Closing the other tab.
+      If you remain on this page the other tab will be reopened, if you leave you'll have to re-run the script.
+      Opening the github page for you.`
+    );
     wind.close && wind.close();
+    if (!githubW || githubW.window.closed)
+      githubW = open('https://github.com/mycatnamedweb/steemstats-improvement_script/blob/master/betterstats.js');
   } catch (e) { console.error(`Unable to close the other tab. Cause: ${e}`); }
   return "Dude, are you sure you want to leave? Think of the kittens!";
 }
