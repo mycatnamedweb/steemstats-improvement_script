@@ -45,6 +45,7 @@ const scrapeStats = () => {
   const allRows = document.querySelectorAll(
     'tr[ng-repeat="content in watched_content | orderObjectBy:sortTypePosts:sortReversePosts"]'
   );
+  idStore = [];
   for (let idx = 0; idx < allRows.length; idx++) {
     if(allRows[idx].innerHTML.indexOf('(author)') !== -1) {
       const rightLink = extractSteemitLink(allRows[idx]) || `~~err${idx}`;
