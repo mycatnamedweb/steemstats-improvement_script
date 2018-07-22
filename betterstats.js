@@ -14,6 +14,14 @@ const sleep = (durationMs) => new Promise(resolve => setTimeout(() => {resolve()
 
 const now = () => new Date().toString().split(' ').slice(1,5).join(' ');
 
+async function loading() {
+  const spinner = wind.document.getElementById('loading');
+  if (spinner) spinner.innerHTML = 'Loading ..';
+  await sleep(5000);
+  if (spinner) document.getElementById('loading').innerHTML = '';
+}
+
+
 const extractSteemitLink = (row) => {
   const anchors = row.getElementsByTagName('a');
   for (let idx = 0; idx < anchors.length; idx++) {
@@ -31,10 +39,11 @@ const cleanLocalStorage = () => {
 const showLoadingIfNotLoadedYet = () => {
   setTimeout(() => {
     if (wind && !wind.document.getElementById('hint')) {
+      console.log('Not loaded yet, refreshing stats..');
       const body = wind.document.getElementsByTagName('body')[0];
       body.className = '';
       body.style['padding'] = '50px';
-      body.innerHTML = `<div id="loading">Almost done...</div>`;
+      body.innerHTML = `<div>Almost done...</div>`;
       setTimeout(() => refreshStats(), 5000);
     }
   }, 5000)
@@ -76,14 +85,15 @@ const tabIsOpen = () => {
   return true;
 }
 
-const injectBody = (results) => {
+const injectBody = (items) => {
   const body = wind.document.getElementsByTagName('body')[0];
   body.className = '';
   body.style['padding'] = '10px 50px';
   body.innerHTML = `
     <h2 style="text-align:center;color:#21ba45;padding:15px">All your recent posts</h2>
+    <div id="loading" style="float:left;width:140px;height:40px;margin-top:-60px;"></div>
     <small style="float:right;color:red;margin:-40px 10px"><b>DO NOT REFRESH THIS PAGE</b></small>
-    <div id="new-container">${results.length ? results.join('<br>') : 'Loading...'}</div>`;
+    <div id="new-container">${items.length ? items.join('<br>') : 'Loading...'}</div>`;
   // wind.window.onbeforeunload = kittens; // nah, let me close it - it will re-open it on refresh.
 }
 
@@ -134,16 +144,16 @@ const tweakStyling = () => {
 
 async function refreshStats() {
   console.log(`${now()} -- Going to refresh stats..`)
-  await sleep(5000);
+  await loading();
 
   console.log(`${now()} -- Extracting stats from steemstats.com ..`);
-  var results = scrapeStats();
+  var items = scrapeStats();
 
   console.log(`${now()} -- Checking if the other tab is still open..`);
   if(!tabIsOpen()) return;
 
   console.log(`${now()} -- Injecting new body in steemstats opened in new tab ..`);
-  injectBody(results);
+  injectBody(items);
 
   console.log(`${now()} -- Tweaking some styling in steemstats opened in new tab ..`);
   tweakStyling();
@@ -179,3 +189,5 @@ const kittens = () => {
   return "Dude, are you sure you want to leave? Think of the kittens!";
 }
 window.onbeforeunload = kittens;
+
+// https://github.com/mycatnamedweb/steemstats-improvement_script/blob/master/betterstats.js
