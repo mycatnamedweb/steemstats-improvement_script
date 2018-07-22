@@ -18,7 +18,7 @@ async function loading() {
   const spinner = wind.document.getElementById('loading');
   if (spinner) spinner.innerHTML = 'Loading ..';
   await sleep(5000);
-  if (spinner) document.getElementById('loading').innerHTML = '';
+  if (spinner) spinner.innerHTML = '';
 }
 
 
