@@ -17,7 +17,7 @@ const now = () => new Date().toString().split(' ').slice(1,5).join(' ');
 async function loading() {
   const spinner = wind.document.getElementById('loading');
   if (spinner) spinner.innerHTML = 'Loading ..';
-  await sleep(5000);
+  await sleep(3000);
   if (spinner) spinner.innerHTML = '';
 }
 
@@ -63,7 +63,7 @@ const scrapeStats = () => {
       results.push(`
         <div id="${id}"
           onclick="if(this.style['background-color']==='lightcyan'){this.style['background-color']='white';localStorage.removeItem(this.id)}else{this.style['background-color']='lightcyan';localStorage.setItem(this.id,1)}"
-          style="padding:5px;border:thin solid grey;margin-top:-10px;${
+          style="padding:10px;border:thin solid grey;margin-top:-10px;${
           localStorage.getItem(id) ? 'background-color:lightcyan' : ''
         }">
           ${allRows[idx].innerHTML}
@@ -111,25 +111,28 @@ const removeElementGivenSelector = (selector) => {
 
 const makeAccountNameBigger = (selector) => {
   const elemArr = wind.document.querySelectorAll(selector);
-  elemArr.forEach((e) => e.innerHTML = `<b style="font-size:18px">
-    ${e.innerText.split(' ')[1].toUpperCase()}
+  elemArr.forEach((e) => e.innerHTML = `<b style="font-size:18px;position:absolute;left:160px">
+    <a href="https://steemit.com/@${e.innerText.split(' ')[1]}" target="_blank">${
+      e.innerText.split(' ')[1].toUpperCase()
+    }</a>
   </b>`);
 }
 
 const tweakStyling = () => {
-  const styles = [{
-    key: 'display',
-    value: 'inherit'
-  },{
-    key: 'margin-left',
-    value: '650px'
-  },{
-    key: 'margin-top',
-    value: '-80px'
-  }];
-  changeStylesGivenSelector('div[class="ui small header ng-scope"]', styles);
-  changeStylesGivenSelector('div[class="ui list"]', [{ key: 'margin-bottom', value: '-60px'}]);
+  changeStylesGivenSelector('div[class="ui small header ng-scope"]', [
+    { key: 'display', value: 'inherit' },
+    { key: 'margin-left', value: '650px' },
+    { key: 'margin-top', value: '-80px' }
+  ]);
+  changeStylesGivenSelector('div[class="ui list"]', [{ key: 'margin-bottom', value: '-40px'}]);
   changeStylesGivenSelector('div[class="ui small header"]', [{ key: 'margin-left', value: '60px'}]);
+  changeStylesGivenSelector('small[class="ng-binding"]', [
+    { key: 'position', value: 'absolute' },
+    { key: 'left', value: '360px' },
+  ]);
+  changeStylesGivenSelector('span[class="ui small green label ng-binding ng-scope"]', [{
+    key: 'color', value: '#079207'
+  }]);
 
   removeElementGivenSelector('button[class="circular ui basic icon button"]');
   removeElementGivenSelector('table[class="ui compact small table ng-scope"]');
@@ -169,8 +172,9 @@ async function refreshStats() {
 // STARTUP
 
 const openTab = () => {
-  wind = open('https://steemstats.com/#!/');
-  wind.addEventListener('load', refreshStats());
+  wind = open('');
+  wind.document.title = 'My Steemit Posts';
+  setTimeout(() => { refreshStats() }, 2000);
   wind.onbeforeunload = () => { tabClosed = true; return undefined; }
 }
 openTab();
