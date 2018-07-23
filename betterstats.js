@@ -15,12 +15,11 @@ const sleep = (durationMs) => new Promise(resolve => setTimeout(() => {resolve()
 const now = () => new Date().toString().split(' ').slice(1,5).join(' ');
 
 async function loading() {
-  const spinner = wind.document.getElementById('loading');
+  const spinner = wind.document.getElementById('loading-label');
   if (spinner) spinner.innerHTML = 'Loading ..';
   await sleep(3000);
   if (spinner) spinner.innerHTML = '';
 }
-
 
 const extractSteemitLink = (row) => {
   const anchors = row.getElementsByTagName('a');
@@ -90,14 +89,23 @@ const injectBody = (items) => {
   body.className = '';
   body.style['padding'] = '10px 50px';
   body.innerHTML = `
-    <h2 style="text-align:center;color:#21ba45;padding:15px">All your recent posts</h2>
-    <div id="loading" style="float:left;width:140px;height:40px;margin-top:-60px;"></div>
+    <h2 style="color:#2185d0;text-align:center;color:#21ba45;padding:15px;font-family:Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;font-weight:700;line-height:1.2857em;">
+      All your recent posts
+    </h2>
+    <div style="float:left;width:140px;height:40px;margin-top:-60px;">
+      <img
+        onclick="window.opener.document.getElementById('refresh-now').click();"
+        style="cursor:pointer;height:30px"
+        src="https://cdn4.iconfinder.com/data/icons/juicyfruit_by_salleedesign/256x256/refresh.png"
+      />
+      <span style="float:right;margin-top:10px;color:#3bc74b" id="loading-label"></span>
+    </div>
     <small style="float:right;color:red;margin:-40px 10px"><b>DO NOT REFRESH THIS PAGE</b></small>
     <div id="new-container">${items.length ? items.join('<br>') : 'Loading...'}</div>`;
-  // wind.window.onbeforeunload = kittens; // nah, let me close it - it will re-open it on refresh.
+  // wind.window.onbeforeunload = kittens; // nah, let me close it - it will be re-opened with refreshStats.
 }
 
-const changeStylesGivenSelector = (selector, styleArr) => {
+const changeStylesGivenSelector = (selector, styleArr = []) => {
   const elemArr = wind.document.querySelectorAll(selector);
   styleArr.forEach(({ key, value }) => {
     elemArr.forEach((e) => e.style[key] = value);
@@ -116,6 +124,22 @@ const makeAccountNameBigger = (selector) => {
       e.innerText.split(' ')[1].toUpperCase()
     }</a>
   </b>`);
+}
+
+const addManualRefreshBtn = () => {
+  const refreshBtn = document.getElementById('refresh-now');
+  if (!refreshBtn) {
+    const elem = document.createElement('div');
+    elem.style.cursor = 'pointer';
+    elem.innerHTML = `<img
+      id="refresh-now"
+      onclick="refreshStats()"
+      style="height:30px"
+      src="https://cdn4.iconfinder.com/data/icons/juicyfruit_by_salleedesign/256x256/refresh.png"
+    />`;
+    const tabs = document.querySelectorAll('div[class="ui top attached tabular menu ng-scope"]')[0];
+    tabs && tabs.appendChild(elem);
+  }
 }
 
 const tweakStyling = () => {
@@ -140,6 +164,8 @@ const tweakStyling = () => {
 
   makeAccountNameBigger('a[class="ui small basic label ng-binding purple"]');
   makeAccountNameBigger('a[class="ui small basic label ng-binding blue"]');
+
+  addManualRefreshBtn();
 }
 
 
