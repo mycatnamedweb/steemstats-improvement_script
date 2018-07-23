@@ -14,11 +14,20 @@ const sleep = (durationMs) => new Promise(resolve => setTimeout(() => {resolve()
 
 const now = () => new Date().toString().split(' ').slice(1,5).join(' ');
 
-async function loading() {
-  const spinner = wind.document.getElementById('loading-label');
-  if (spinner) spinner.innerHTML = 'Loading ..';
-  await sleep(3000);
-  if (spinner) spinner.innerHTML = '';
+async function loading(state) {
+  const label = wind.document.getElementById('loading-label');
+  const refreshBtn = wind.document.getElementById('refreshBtn');
+  if (state === 'start') {
+    if (label) label.innerHTML = 'Loading ..';
+    if (refreshBtn) refreshBtn.style.display = 'none';
+    await sleep(3000);
+  } else if (state === 'end') {
+    if (label) label.innerHTML = '';
+    if (refreshBtn) refreshBtn.style.display = 'inherit';
+    showLoadingIfNotLoadedYet()
+  } else {
+    console.error(`Invalid argument "${state}" in loading function.`);
+  }
 }
 
 const extractSteemitLink = (row) => {
@@ -94,6 +103,7 @@ const injectBody = (items) => {
     </h2>
     <div style="float:left;width:140px;height:40px;margin-top:-60px;">
       <img
+        id="refreshBtn"
         onclick="window.opener.document.getElementById('refresh-now').click();"
         style="cursor:pointer;height:30px"
         src="https://cdn4.iconfinder.com/data/icons/juicyfruit_by_salleedesign/256x256/refresh.png"
@@ -173,7 +183,7 @@ const tweakStyling = () => {
 
 async function refreshStats() {
   console.log(`${now()} -- Going to refresh stats..`)
-  await loading();
+  await loading('start');
 
   console.log(`${now()} -- Extracting stats from steemstats.com ..`);
   var items = scrapeStats();
@@ -191,7 +201,7 @@ async function refreshStats() {
   cleanLocalStorage();
 
   console.log(`${now()} -- Done.`);
-  showLoadingIfNotLoadedYet()
+  loading('end');
 }
 
 
