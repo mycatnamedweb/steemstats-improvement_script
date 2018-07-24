@@ -100,6 +100,9 @@ const injectBody = (items) => {
   body.innerHTML = `
     <h2 style="color:#2185d0;text-align:center;color:#21ba45;padding:15px;font-family:Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;font-weight:700;line-height:1.2857em;">
       All your recent posts
+      <small style="font-size:10px">
+        from <a href="https://steemstats.com">steemstats</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://github.com/mycatnamedweb/steemstats-improvement_script/edit/master/betterstats.js">source</a>
+      </small>
     </h2>
     <div style="float:left;width:140px;height:40px;margin-top:-60px;">
       <img
@@ -214,7 +217,7 @@ const openTab = () => {
   wind.onbeforeunload = () => { tabClosed = true; return undefined; }
 }
 openTab();
-setInterval(() => refreshStats(), 5 * 60000); // every 5 MINs
+setInterval(() => refreshStats(), 10 * 60000); // every 10 MINs
 let githubW;
 const kittens = () => {
   try {
