@@ -47,7 +47,7 @@ const cleanLocalStorage = () => {
 const showLoadingIfNotLoadedYet = () => {
   setTimeout(() => {
     if (wind && !wind.document.getElementById('hint')) {
-      console.log('Not loaded yet, refreshing stats..');
+      console.debug('Not loaded yet, refreshing stats..');
       const body = wind.document.getElementsByTagName('body')[0];
       body.className = '';
       body.style['padding'] = '50px';
@@ -86,7 +86,7 @@ const scrapeStats = () => {
 const tabIsOpen = () => {
   if (tabClosed || !wind) {
     tabClosed = false;
-    console.log('Tab was closed. Reopening..');
+    console.debug('Tab was closed. Reopening..');
     openTab();
     return false;
   }
@@ -185,25 +185,25 @@ const tweakStyling = () => {
 // LOGIC FLOW
 
 async function refreshStats() {
-  console.log(`${now()} -- Going to refresh stats..`)
+  console.debug(`${now()} -- Going to refresh stats..`)
   await loading('start');
 
-  console.log(`${now()} -- Extracting stats from steemstats.com ..`);
+  console.debug(`${now()} -- Extracting stats from steemstats.com ..`);
   var items = scrapeStats();
 
-  console.log(`${now()} -- Checking if the other tab is still open..`);
+  console.debug(`${now()} -- Checking if the other tab is still open..`);
   if(!tabIsOpen()) return;
 
-  console.log(`${now()} -- Injecting new body in steemstats opened in new tab ..`);
+  console.debug(`${now()} -- Injecting new body in steemstats opened in new tab ..`);
   injectBody(items);
 
-  console.log(`${now()} -- Tweaking some styling in steemstats opened in new tab ..`);
+  console.debug(`${now()} -- Tweaking some styling in steemstats opened in new tab ..`);
   tweakStyling();
 
-  console.log(`${now()} -- Performing some cleansing on the localStorage..`);
+  console.debug(`${now()} -- Performing some cleansing on the localStorage..`);
   cleanLocalStorage();
 
-  console.log(`${now()} -- Done.`);
+  console.debug(`${now()} -- Done.`);
   loading('end');
 }
 
@@ -225,7 +225,17 @@ const kittens = () => {
       If you remain on this page the other tab will be reopened, if you leave you'll have to re-run the script.
       Opening the github page for you.`
     );
-    wind.close && wind.close();
+    // wind.close && wind.close();
+    const divToAdd = wind.document.createElement('div');
+    const myStyle = divToAdd.style;
+    myStyle.padding = '5px';
+    myStyle['text-align'] = 'center';
+    myStyle.position = 'fixed';
+    myStyle.top = '0';
+    myStyle.left = '0';
+    divToAdd.innerHTML = `<h4 style="color:red">THIS WINDOW IS NOW OUT OF SYNC.</h4>`;
+    wind.document.body.insertBefore(divToAdd, wind.document.body.firstChild);
+
     if (!githubW || githubW.window.closed)
       githubW = open('https://github.com/mycatnamedweb/steemstats-improvement_script/blob/master/betterstats.js');
   } catch (e) { console.error(`Unable to close the other tab. Cause: ${e}`); }
